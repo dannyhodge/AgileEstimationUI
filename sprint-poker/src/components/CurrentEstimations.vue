@@ -9,7 +9,7 @@
         <b-input v-model="userScore"></b-input>
       </b-field>
 
-      <b-button @click="clickMe">Click Me</b-button>
+      <b-button>Click Me</b-button>
     </section>
 
     <section>
@@ -20,6 +20,10 @@
 <script>
 export default {
   name: "CurrentEstimations",
+  props: {
+    myScore: Number,
+    mySocket: Object,
+  },
   data: function () {
     return {
       userName: "",
@@ -53,11 +57,11 @@ export default {
       ],
       columns: [
         {
-          field: "userName",
+          field: "Name",
           label: "Username",
         },
         {
-          field: "score",
+          field: "Score",
           label: "Score",
           width: "40",
           numeric: true,
@@ -65,14 +69,20 @@ export default {
       ],
     };
   },
-  methods: {
-    clickMe: function clickMe() {
-      this.tableData[0].userName = this.userName;
-      this.tableData[0].score = this.userScore;
+  created() {
+    this.socket = this.mySocket;
+    this.socket.socket.on("scores changed", (data) => {
+      this.tableData = data;
+    });
+  },
+  watch: {
+    myScore: function () {
+      this.tableData[0].score = this.myScore;
     },
   },
-  watch: {},
-  mounted: function () {},
+  mounted: function () {
+    this.tableData[0].userName = this.userName;
+  },
 };
 </script>
 <style>

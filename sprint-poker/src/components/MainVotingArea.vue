@@ -1,16 +1,28 @@
 <template>
   <div id="mainArea">
-      <CurrentEstimations />
-      <PastEstimations />  
+    <CurrentEstimations  v-bind:mySocket="socket" :myScore="myScore" />
+    <PastEstimations />
   </div>
 </template>
 <script>
-import CurrentEstimations from './CurrentEstimations.vue';
-import PastEstimations from './PastEstimations.vue';
+import CurrentEstimations from "./CurrentEstimations.vue";
+import PastEstimations from "./PastEstimations.vue";
 
 export default {
   components: { CurrentEstimations, PastEstimations },
-  name: 'MainVotingArea',
+  props: {
+    myScore: Number,
+    mySocket: Object,
+  },
+  data: function () {
+    return {
+      socket: Object,
+    };
+  },
+  created() {
+    this.socket = this.mySocket;
+  },
+  name: "MainVotingArea",
 };
 </script>
 <style>

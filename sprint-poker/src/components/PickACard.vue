@@ -2,7 +2,40 @@
   <div id="bottomSection">
     <div id="allCards">
       <div v-for="card in cardData" :key="card.score">
-        <div class="card" v-bind:class="{ height: card.height }">
+        <div
+          class="card score"
+          v-bind:style="[
+            {
+              height:
+                card.score == activeCard || card.score == hoveredCard
+                  ? '200px'
+                  : '175px',
+            },
+            {
+              marginTop:
+                card.score == activeCard || card.score == hoveredCard
+                  ? '0px'
+                  : '25px',
+            },
+            {
+              zIndex:
+                card.score == activeCard || card.score == hoveredCard
+                  ? 1000
+                  : 1,
+            },
+            {
+              boxShadow:
+                card.score == activeCard
+                  ? '0 0.5em 1em -0.125em rgb(10 10 10 / 50%), 0 0px 0 2px rgb(121 87 213 / 100%) !important'
+                  : card.score == hoveredCard
+                  ? '0 0.5em 1em -0.125em rgb(10 10 10 / 50%), 0 0px 0 2px rgb(10 10 10 / 3 0%) !important'
+                  : '0 0.5em 1em -0.125em rgb(10 10 10 / 50%),0 0px 0 1px rgb(10 10 10 / 3%) !important',
+            },
+          ]"
+          @click="cardSelected(card)"
+          @mouseover="onHoverCard(card)"
+          @mouseleave="onExitCard(card)"
+        >
           <div class="card-content">
             <p class="title">{{ card.score }}</p>
           </div>
@@ -14,9 +47,13 @@
 <script>
 export default {
   name: "PickACard",
+  props: {
+    mySocket: Object,
+  },
   data: function () {
     return {
-      activeCard: 1,
+      activeCard: 0,
+      hoveredCard: 0,
       cardData: [
         {
           score: 1,
@@ -32,7 +69,7 @@ export default {
         },
         {
           score: 5,
-          height: 300,
+          height: 50,
         },
         {
           score: 8,
@@ -51,7 +88,11 @@ export default {
           height: 50,
         },
       ],
+      socket: Object,
     };
+  },
+  created() {
+    this.socket = this.mySocket;
   },
   methods: {
     clickMe: function clickMe() {
@@ -63,9 +104,18 @@ export default {
         return 100;
       }
     },
+    cardSelected: function (card) {
+      this.activeCard = card.score;
+      this.$emit("changeSelection", card.score);
+      this.socket.emitMyScore(this.socket.socket.id, card.score);
+    },
+    onHoverCard: function (card) {
+      this.hoveredCard = card.score;
+    },
+    onExitCard: function () {
+      this.hoveredCard = 0;
+    },
   },
-  watch: {},
-  mounted: function () {},
 };
 </script>
 <style>
@@ -75,24 +125,14 @@ export default {
   right: 0;
   width: 100%;
 }
-.card {
+.score {
   width: 12%;
-  height: 175px;
   float: left;
-  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 30%),
-    0 0px 0 1px rgb(10 10 10 / 3%) !important;
   margin-left: -3%;
-  margin-top: 25px;
-  min-width: 120px;
+  min-width: 100px;
+  border-radius: 15px 15px 0px 0px!important;
 }
-.card:hover {
-  z-index: 1000;
-  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 30%),
-    0 0px 0 1px rgb(10 10 10 / 40%) !important;
 
-  margin-top: 0px;
-  height: 200px;
-}
 .card .card-content .title {
   text-align: center;
 }
