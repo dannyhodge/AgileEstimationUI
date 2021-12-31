@@ -125,11 +125,11 @@ export default {
   right: 0;
   width: 100%;
 }
+
 .score {
-  width: 12%;
+  width: 130px;
   float: left;
   margin-left: -3%;
-  min-width: 100px;
   border-radius: 15px 15px 0px 0px!important;
 }
 
@@ -137,9 +137,9 @@ export default {
   text-align: center;
 }
 #allCards {
-  width: 70%;
+  width: 100%;
   height: 200px;
-
-  margin-left: 25%;
+  display: flex;
+  justify-content: center;
 }
 </style>
